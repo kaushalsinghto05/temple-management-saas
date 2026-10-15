@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: temple-management-saas
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install && npm run build
+    preDeployCommand: npm run db:init
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DEFAULT_TIMEZONE
+        value: Asia/Kolkata
+      - key: DEFAULT_CURRENCY
+        value: INR
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: temple-db
+          property: connectionString
+
+databases:
+  - name: temple-db
+    databaseName: temple_saas
+    user: temple_admin
+    plan: starter
+    region: oregon
+    postgresMajorVersion: 16
