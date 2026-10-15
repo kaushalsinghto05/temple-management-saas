@@ -1,0 +1,52 @@
+name: CI & Render Auto-Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-build:
+    name: Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run automated test suites (24 suites, 70 tests)
+        run: npm test
+
+      - name: Build Next.js application
+        run: npm run build
+
+  deploy-render:
+    name: Render Auto-Deploy Hook
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deploy Hook (if configured)
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_HOOK" ]; then
+            echo "🚀 Triggering Render deploy hook..."
+            curl -fsS -X POST "$RENDER_HOOK"
+            echo "✅ Deploy hook triggered successfully."
+          else
+            echo "ℹ️ RENDER_DEPLOY_HOOK_URL secret not set. Render will auto-deploy via GitHub Blueprint commit trigger."
+          fi

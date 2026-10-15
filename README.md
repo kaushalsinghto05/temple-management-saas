@@ -2,6 +2,8 @@
 
 A modern, production-grade multi-tenant SaaS platform designed for Hindu temples and religious trusts. Built with Next.js (App Router), TypeScript, Drizzle ORM, and PostgreSQL with Row-Level Security (RLS).
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/kaushalsinghto05/temple-management-saas)
+
 ---
 
 ## Key Features
